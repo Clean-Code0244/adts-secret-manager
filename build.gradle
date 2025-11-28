@@ -26,36 +26,26 @@ dependencyManagement {
 }
 
 dependencies {
-	// AutoConfiguration
 	implementation 'org.springframework.boot:spring-boot-autoconfigure'
-
-	// Conjur SDK
 	api 'com.cyberark.conjur.api:conjur-api:3.0.5'
-
-	// JAXB
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
-
-	// Lombok & Logging
 	implementation 'org.slf4j:slf4j-api'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-
-	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('jar') {
 	enabled = true
-	archiveClassifier = ''
+	archiveClassifier.set('')
 }
 
-tasks.named('jar') {
-	enabled = true
-	archiveClassifier = ''
-}
+println "-------------------------------------------------------"
+println "GPG Key ID: " + findProperty("signing.keyId")
+println "GPG File:   " + findProperty("signing.secretKeyRingFile")
+println "-------------------------------------------------------"
 
-// --- MAVEN CENTRAL
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
@@ -81,7 +71,6 @@ publishing {
 					}
 				}
 
-				// <scm> karşılığı:
 				scm {
 					connection = 'scm:git:git://github.com/Clean-Code0244/adts-secret-manager.git'
 					developerConnection = 'scm:git:ssh://github.com/Clean-Code0244/adts-secret-manager.git'
@@ -91,7 +80,6 @@ publishing {
 		}
 	}
 
-	// Nereye yüklenecek? (Sonatype OSSRH Sunucusu)
 	repositories {
 		maven {
 			name = "OSSRH"
@@ -107,16 +95,11 @@ publishing {
 	}
 }
 
+
 signing {
 	required { gradle.taskGraph.hasTask("publish") }
 
-	def signingKeyId = findProperty("signing.keyId")
-	def signingKey = findProperty("signing.secretKeyRingFile")
-	def signingPassword = findProperty("signing.password")
-
-	if (signingKeyId && signingKey && signingPassword) {
-		sign publishing.publications.mavenJava
-	}
+	sign publishing.publications.mavenJava
 }
 
 tasks.named('test') {
