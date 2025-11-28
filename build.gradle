@@ -1,0 +1,114 @@
+plugins {
+	id 'java-library'
+	id 'org.springframework.boot' version '4.0.0' apply false
+	id 'io.spring.dependency-management' version '1.1.6'
+	id 'maven-publish'
+	id 'signing'
+}
+
+group = 'io.github.clean-code0244'
+version = '1.0.0'
+
+java {
+	sourceCompatibility = '17'
+	withJavadocJar()
+	withSourcesJar()
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.boot:spring-boot-dependencies:3.4.0"
+	}
+}
+
+dependencies {
+	// AutoConfiguration
+	implementation 'org.springframework.boot:spring-boot-autoconfigure'
+
+	// Conjur SDK
+	api 'com.cyberark.conjur.api:conjur-api:3.0.5'
+
+	// JAXB (Java 17 Support)
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+
+	// Lombok & Logging
+	implementation 'org.slf4j:slf4j-api'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('jar') {
+	enabled = true
+	archiveClassifier = ''
+}
+
+tasks.named('jar') {
+	enabled = true
+}
+
+// --- MAVEN CENTRAL ---
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+
+			pom {
+				name = 'ADTS Secret Manager'
+				description = 'Spring Boot starter for CyberArk Conjur integration'
+				url = 'https://github.com/Clean-Code0244/adts-secret-manager'
+
+				licenses {
+					license {
+						name = 'The Apache License, Version 2.0'
+						url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					}
+				}
+
+				developers {
+					developer {
+						id = 'Clean-Code0244'
+						name = 'Clean-Code0244'
+						email = 'tursunyusufomer@gmail.com'
+					}
+				}
+
+				scm {
+					connection = 'scm:git:git://github.com/Clean-Code0244/adts-secret-manager.git'
+					developerConnection = 'scm:git:ssh://github.com/Clean-Code0244/adts-secret-manager.git'
+					url = 'https://github.com/Clean-Code0244/adts-secret-manager'
+				}
+			}
+		}
+	}
+
+	repositories {
+		maven {
+			name = "OSSRH"
+			def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+			def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+			credentials {
+				username = project.findProperty("ossrhUsername")
+				password = project.findProperty("ossrhPassword")
+			}
+		}
+	}
+}
+
+signing {
+	required { gradle.taskGraph.hasTask("publish") }
+	sign publishing.publications.mavenJava
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
