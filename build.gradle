@@ -1,6 +1,6 @@
 plugins {
 	id 'java-library'
-	id 'org.springframework.boot' version '4.0.0' apply false
+	id 'org.springframework.boot' version '3.4.0' apply false
 	id 'io.spring.dependency-management' version '1.1.6'
 	id 'maven-publish'
 	id 'signing'
@@ -48,10 +48,6 @@ dependencies {
 tasks.named('jar') {
 	enabled = true
 	archiveClassifier = ''
-}
-
-tasks.named('jar') {
-	enabled = true
 }
 
 // --- MAVEN CENTRAL ---
