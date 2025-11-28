@@ -32,7 +32,7 @@ dependencies {
 	// Conjur SDK
 	api 'com.cyberark.conjur.api:conjur-api:3.0.5'
 
-	// JAXB (Java 17 Support)
+	// JAXB
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
 
@@ -50,7 +50,12 @@ tasks.named('jar') {
 	archiveClassifier = ''
 }
 
-// --- MAVEN CENTRAL ---
+tasks.named('jar') {
+	enabled = true
+	archiveClassifier = ''
+}
+
+// --- MAVEN CENTRAL
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
@@ -76,6 +81,7 @@ publishing {
 					}
 				}
 
+				// <scm> karşılığı:
 				scm {
 					connection = 'scm:git:git://github.com/Clean-Code0244/adts-secret-manager.git'
 					developerConnection = 'scm:git:ssh://github.com/Clean-Code0244/adts-secret-manager.git'
@@ -85,6 +91,7 @@ publishing {
 		}
 	}
 
+	// Nereye yüklenecek? (Sonatype OSSRH Sunucusu)
 	repositories {
 		maven {
 			name = "OSSRH"
@@ -102,7 +109,14 @@ publishing {
 
 signing {
 	required { gradle.taskGraph.hasTask("publish") }
-	sign publishing.publications.mavenJava
+
+	def signingKeyId = findProperty("signing.keyId")
+	def signingKey = findProperty("signing.secretKeyRingFile")
+	def signingPassword = findProperty("signing.password")
+
+	if (signingKeyId && signingKey && signingPassword) {
+		sign publishing.publications.mavenJava
+	}
 }
 
 tasks.named('test') {
