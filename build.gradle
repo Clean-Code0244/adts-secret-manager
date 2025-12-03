@@ -6,12 +6,11 @@ plugins {
 }
 
 group = 'io.github.clean-code0244'
-version = '2.0.0'
+
+version = '2.0.1'
 
 java {
 	sourceCompatibility = '17'
-	withJavadocJar()
-	withSourcesJar()
 }
 
 repositories {
@@ -25,10 +24,13 @@ dependencyManagement {
 }
 
 dependencies {
-	implementation 'org.springframework:spring-context'
+	implementation 'org.springframework:spring-context:6.0.0'
 
-	// Conjur SDK
-	api 'com.cyberark.conjur.api:conjur-api:3.0.5'
+	api('com.cyberark.conjur.api:conjur-api:3.0.5') {
+		exclude group: 'org.glassfish.jersey.media', module: 'jersey-media-json-binding'
+	}
+
+	implementation 'org.glassfish.jersey.media:jersey-media-json-jackson:3.1.5'
 
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
@@ -48,11 +50,12 @@ tasks.named('jar') {
 import com.vanniktech.maven.publish.SonatypeHost
 
 mavenPublishing {
-	coordinates("io.github.clean-code0244", "adts-secret-manager", "2.0.0")
+
+	coordinates("io.github.clean-code0244", "adts-secret-manager", "2.0.1")
 
 	pom {
 		name = "ADTS Secret Manager"
-		description = "Universal Spring library for CyberArk Conjur integration (Works with Boot & Legacy)"
+		description = "Spring Framework library for CyberArk Conjur integration (Universal)"
 		url = "https://github.com/Clean-Code0244/adts-secret-manager"
 		inceptionYear = "2024"
 
@@ -80,6 +83,7 @@ mavenPublishing {
 	}
 
 	publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
 	signAllPublications()
 }
 
