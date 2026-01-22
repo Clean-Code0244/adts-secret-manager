@@ -12,11 +12,27 @@ public class ConjurLibraryConfiguration {
 
     @Bean
     public ConjurSecretService conjurSecretService(
-            @Value("${conjur.appliance-url:}") String url,
-            @Value("${conjur.account:}") String account,
-            @Value("${conjur.authn-login:}") String login,
-            @Value("${conjur.authn-api-key:}") String apiKey
+            // 1. URL
+            @Value("${conjur.appliance-url}") String applianceUrl,
+
+            // 2. Account
+            @Value("${conjur.account}") String account,
+
+            // 3. Service ID
+            @Value("${conjur.authn-jwt-service-id}") String authnJwtServiceId,
+
+            // 4. SSL Certificate
+            @Value("${conjur.ssl-certificate}") String sslCertificate,
+
+            // 5. Token File Path
+            @Value("${conjur.authn-token-file}") String tokenFilePath
     ) {
-        return new ConjurSecretService(url, account, login, apiKey);
+        return new ConjurSecretService(
+                applianceUrl,
+                account,
+                authnJwtServiceId,
+                sslCertificate,
+                tokenFilePath
+        );
     }
 }
