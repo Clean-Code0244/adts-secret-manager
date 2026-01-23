@@ -1,13 +1,11 @@
 plugins {
 	id 'java-library'
-	id 'org.springframework.boot' version '3.4.0' apply false
-	id 'io.spring.dependency-management' version '1.1.6'
-	id "com.vanniktech.maven.publish" version "0.29.0"
+	id "com.vanniktech.maven.publish" version "0.32.0"
 }
 
 group = 'io.github.clean-code0244'
 
-version = '3.0.0'
+version = '3.0.3'
 
 java {
 	sourceCompatibility = '25'
@@ -17,27 +15,32 @@ repositories {
 	mavenCentral()
 }
 
-dependencyManagement {
-	imports {
-		mavenBom "org.springframework.boot:spring-boot-dependencies:3.4.0"
-	}
+ext {
+	springVersion = '6.2.1'
+	jacksonVersion = '2.18.2'
+	slf4jVersion = '2.0.16'
+	jakartaAnnotationVersion = '3.0.0'
+	lombokVersion = '1.18.42'
+	jakartaWsRsVersion = '3.1.0'
 }
 
 dependencies {
 
-	implementation 'org.springframework:spring-web'
+	api "jakarta.ws.rs:jakarta.ws.rs-api:${jakartaWsRsVersion}"
 
-	implementation 'org.springframework:spring-context'
+	implementation "org.springframework:spring-web:${springVersion}"
+	implementation "org.springframework:spring-context:${springVersion}"
 
-	implementation 'jakarta.annotation:jakarta.annotation-api'
+	implementation "jakarta.annotation:jakarta.annotation-api:${jakartaAnnotationVersion}"
+	implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+	implementation "org.slf4j:slf4j-api:${slf4jVersion}"
 
-	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	compileOnly "org.projectlombok:lombok:${lombokVersion}"
+	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-	implementation 'org.slf4j:slf4j-api'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+	testImplementation "org.springframework:spring-test:${springVersion}"
+	testImplementation 'org.mockito:mockito-core:5.14.2'
 }
 
 tasks.named('jar') {
@@ -48,8 +51,7 @@ tasks.named('jar') {
 import com.vanniktech.maven.publish.SonatypeHost
 
 mavenPublishing {
-
-	coordinates("io.github.clean-code0244", "adts-secret-manager", "3.0.0")
+	coordinates("io.github.clean-code0244", "adts-secret-manager", version)
 
 	pom {
 		name = "ADTS Secret Manager"
@@ -87,4 +89,8 @@ mavenPublishing {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.withType(GenerateModuleMetadata).configureEach {
+	enabled = false
 }
